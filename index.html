@@ -94,7 +94,7 @@
       </div>
       <div class="places">
         <article class="place">
-          <img src="assets/img/tardis/drums-1000.jpg" alt="A student plays drums in the TARDIS live room." loading="lazy">
+          <img src="assets/img/tardis/control-room-wide-1000.jpg" alt="The TARDIS control room, looking through the window into the live room." loading="lazy">
           <div class="place-body">
             <span class="room-no">PETER IRVING WOLD CENTER</span>
             <h3>TARDIS</h3>
@@ -103,13 +103,30 @@
           </div>
         </article>
         <article class="place">
-          <div class="room-photo blank" style="aspect-ratio:16/9;display:grid;place-items:center;background:repeating-linear-gradient(135deg,var(--surface-2) 0 10px,var(--bg) 10px 20px);color:var(--muted);font-family:var(--font-mono);font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase" role="img" aria-label="Photo of the Music Technology Studio coming soon">Photo coming soon</div>
+          <img src="assets/img/studio/mts-room-1000.jpg"
+               srcset="assets/img/studio/mts-room-1000.jpg 1000w, assets/img/studio/mts-room-2000.jpg 2000w"
+               sizes="(max-width: 48rem) 100vw, 34rem"
+               alt="The Music Technology Studio: rows of iMac workstations with MIDI keyboards facing a teaching station with a large display and studio monitors." loading="lazy">
           <div class="place-body">
             <span class="room-no">TAYLOR MUSIC CENTER</span>
             <h3>Music Technology Studio</h3>
-            <p>A computer lab for hands-on coursework with digital audio workstations, MIDI controllers, audio interfaces, and studio hardware.</p>
+            <p>A computer lab for hands-on coursework. Every station has an iMac, a MIDI keyboard, an audio interface, a microphone, and headphones, and the teaching station drives a large display and studio monitors.</p>
           </div>
         </article>
+      </div>
+      <div class="mosaic" data-gallery>
+        <button class="tile tile--big" type="button" data-full="assets/img/studio/mts-class-2000.jpg" data-caption="Class in session in the Music Technology Studio.">
+          <img src="assets/img/studio/mts-class-1000.jpg" alt="Students in headphones work at keyboard workstations while the instructor's session shows on the big screen." loading="lazy">
+        </button>
+        <button class="tile tile--wide" type="button" data-full="assets/img/tardis/drums-2000.jpg" data-caption="Tracking drums in the TARDIS live room.">
+          <img src="assets/img/tardis/drums-1000.jpg" alt="A student plays a fully miked drum kit in the TARDIS live room." loading="lazy">
+        </button>
+        <button class="tile" type="button" data-full="assets/img/tardis/sq5-1000.jpg" data-caption="The Allen &amp; Heath SQ5 in the TARDIS control room.">
+          <img src="assets/img/tardis/sq5-1000.jpg" alt="Close-up of the SQ5 console." loading="lazy">
+        </button>
+        <button class="tile" type="button" data-full="assets/img/tardis/vocals-2000.jpg" data-caption="Vocal session in the TARDIS live room.">
+          <img src="assets/img/tardis/vocals-1000.jpg" alt="A singer in headphones performs at a microphone." loading="lazy">
+        </button>
       </div>
     </div>
   </section>
@@ -154,6 +171,16 @@
     </div>
   </section>
 </main>
+
+<dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
+  <figure>
+    <img id="lightbox-img" src="" alt="">
+    <figcaption id="lightbox-cap"></figcaption>
+  </figure>
+  <button class="lb-btn lb-close" type="button" data-lb="close" aria-label="Close">&times;</button>
+  <button class="lb-btn lb-prev" type="button" data-lb="prev" aria-label="Previous photo">&lsaquo;</button>
+  <button class="lb-btn lb-next" type="button" data-lb="next" aria-label="Next photo">&rsaquo;</button>
+</dialog>
 
 <footer class="site-footer">
   <div class="wrap">

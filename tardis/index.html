@@ -66,11 +66,9 @@
           <p>The studio serves as an interdisciplinary hub. Music and engineering faculty oversee it together, and it is open to faculty, faculty-supervised student projects, and students enrolled in Music Technology courses.</p>
         </div>
         <figure>
-          <img src="../assets/img/tardis/control-room-1000.jpg"
-               srcset="../assets/img/tardis/control-room-1000.jpg 1000w, ../assets/img/tardis/control-room-2000.jpg 2000w"
-               sizes="(max-width: 52rem) 100vw, 34rem"
-               alt="Students gather around the mixing desk in the TARDIS control room." loading="lazy">
-          <figcaption>Students working at the desk in the control room.</figcaption>
+          <img src="../assets/img/tardis/sq5-1000.jpg"
+               alt="Close-up of the Allen and Heath SQ5 digital console, its faders and touchscreen lit up." loading="lazy">
+          <figcaption>The Allen &amp; Heath SQ5 console in the control room.</figcaption>
         </figure>
       </div>
 
@@ -109,10 +107,8 @@
           </div>
         </article>
         <article class="room">
-          <img class="room-photo" src="../assets/img/tardis/control-room-1000.jpg"
-               srcset="../assets/img/tardis/control-room-1000.jpg 1000w, ../assets/img/tardis/control-room-2000.jpg 2000w"
-               sizes="(max-width: 60rem) 100vw, 24rem"
-               alt="The control room desk with studio monitors, a keyboard controller, and a computer." loading="lazy">
+          <img class="room-photo room-photo--control" src="../assets/img/tardis/control-room-tall-1000.jpg"
+               alt="The control room desk: SQ5 console, studio monitors, and a window into the live room." loading="lazy">
           <div class="room-body">
             <span class="room-no">WOLD 030b</span>
             <h3>Control room</h3>
@@ -201,6 +197,32 @@
     </div>
   </section>
 
+  <section class="glass" id="control-room" aria-labelledby="glass-title">
+    <div class="wrap glass-wrap">
+      <div class="glass-copy">
+        <span class="eyebrow">Inside the control room</span>
+        <h2 id="glass-title">Through the glass</h2>
+        <p>From the mix position you can see straight into the live room. Point to a number to see what's what.</p>
+        <ol class="glass-legend" id="glass-legend">
+          <li data-spot="1"><strong>Window to the live room</strong><span>Sight line to performers in Wold 030</span></li>
+          <li data-spot="2"><strong>Allen &amp; Heath SQ5</strong><span>Digital console for tracking and monitoring</span></li>
+          <li data-spot="3"><strong>Adam Audio S3X-H</strong><span>Active three-way monitors</span></li>
+          <li data-spot="4"><strong>Lipinski L-707</strong><span>Passive mains, paired with subwoofers</span></li>
+          <li data-spot="5"><strong>Studio computer</strong><span>DAW sessions saved to the TARDIS Data drive</span></li>
+        </ol>
+      </div>
+      <figure class="glass-photo">
+        <img src="../assets/img/tardis/control-room-wide-1000.jpg"
+             alt="The TARDIS control room in low light: the SQ5 console and a computer on the desk, two pairs of monitors, and a large window looking into the live room.">
+        <button class="spot" type="button" data-spot="1" style="left:50%;top:24%" aria-label="Window to the live room">1</button>
+        <button class="spot" type="button" data-spot="2" style="left:37%;top:55%" aria-label="Allen and Heath SQ5">2</button>
+        <button class="spot" type="button" data-spot="3" style="left:28.5%;top:44%" aria-label="Adam Audio S3X-H">3</button>
+        <button class="spot" type="button" data-spot="4" style="left:37.5%;top:37%" aria-label="Lipinski L-707">4</button>
+        <button class="spot" type="button" data-spot="5" style="left:52.5%;top:48%" aria-label="Studio computer">5</button>
+      </figure>
+    </div>
+  </section>
+
   <section class="section" id="work" aria-labelledby="work-title">
     <div class="wrap">
       <div class="section-head">
@@ -214,21 +236,22 @@
         <div class="use"><h3>Sound design and experimentation</h3><p>Ambisonic capture, close and distant miking, modeling microphones, and electronic setups.</p></div>
         <div class="use"><h3>Instruction</h3><p>Hands-on sessions for Music Technology courses, including AMU 240: Recording and Mixing Sound.</p></div>
       </div>
-      <div class="photo-pair">
-        <figure>
-          <img src="../assets/img/tardis/class-mics-1000.jpg"
-               srcset="../assets/img/tardis/class-mics-1000.jpg 1000w, ../assets/img/tardis/class-mics-2000.jpg 2000w"
-               sizes="(max-width: 40rem) 100vw, 34rem"
-               alt="Students position microphone stands during a class session in the live room." loading="lazy">
-          <figcaption>Students setting up microphones during an AMU 240 session.</figcaption>
-        </figure>
-        <figure>
-          <img src="../assets/img/tardis/class-live-room-1000.jpg"
-               srcset="../assets/img/tardis/class-live-room-1000.jpg 1000w, ../assets/img/tardis/class-live-room-2000.jpg 2000w"
-               sizes="(max-width: 40rem) 100vw, 34rem"
-               alt="Professor Chris Chandler leads a class discussion in the live room beside the rack and a grand piano." loading="lazy">
-          <figcaption>Professor Chris Chandler teaching in the live room, January 2025.</figcaption>
-        </figure>
+      <div class="mosaic" data-gallery>
+        <button class="tile tile--wide" type="button" data-full="../assets/img/tardis/drums-2000.jpg" data-caption="Tracking drums in the live room.">
+          <img src="../assets/img/tardis/drums-1000.jpg" alt="A student plays a fully miked drum kit in the live room." loading="lazy">
+        </button>
+        <button class="tile tile--tall" type="button" data-full="../assets/img/tardis/control-room-tall-1000.jpg" data-caption="The mix position in the control room.">
+          <img src="../assets/img/tardis/control-room-tall-1000.jpg" alt="The control room desk seen head on, with monitors and the window to the live room." loading="lazy">
+        </button>
+        <button class="tile" type="button" data-full="../assets/img/tardis/vocals-2000.jpg" data-caption="Vocal session in the live room.">
+          <img src="../assets/img/tardis/vocals-1000.jpg" alt="A singer in headphones performs at a microphone behind a reflection filter." loading="lazy">
+        </button>
+        <button class="tile tile--wide" type="button" data-full="../assets/img/tardis/sq5-1000.jpg" data-caption="The Allen &amp; Heath SQ5.">
+          <img src="../assets/img/tardis/sq5-1000.jpg" alt="Close-up of the SQ5 console faders and screen." loading="lazy">
+        </button>
+        <button class="tile" type="button" data-full="../assets/img/tardis/class-mics-2000.jpg" data-caption="AMU 240 students placing microphones.">
+          <img src="../assets/img/tardis/class-mics-1000.jpg" alt="Students adjust microphone stands during a class session." loading="lazy">
+        </button>
       </div>
     </div>
   </section>
@@ -385,6 +408,16 @@
   </section>
 
 </main>
+
+<dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
+  <figure>
+    <img id="lightbox-img" src="" alt="">
+    <figcaption id="lightbox-cap"></figcaption>
+  </figure>
+  <button class="lb-btn lb-close" type="button" data-lb="close" aria-label="Close">&times;</button>
+  <button class="lb-btn lb-prev" type="button" data-lb="prev" aria-label="Previous photo">&lsaquo;</button>
+  <button class="lb-btn lb-next" type="button" data-lb="next" aria-label="Next photo">&rsaquo;</button>
+</dialog>
 
 <footer class="site-footer">
   <div class="wrap">

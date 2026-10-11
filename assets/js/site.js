@@ -23,3 +23,53 @@ document.querySelectorAll("[data-copy]").forEach(function (btn) {
     }
   });
 });
+
+// Lightbox for [data-gallery] tiles
+(function () {
+  var box = document.getElementById("lightbox");
+  if (!box || typeof box.showModal !== "function") return;
+  var img = document.getElementById("lightbox-img");
+  var cap = document.getElementById("lightbox-cap");
+  var tiles = Array.prototype.slice.call(document.querySelectorAll("[data-gallery] .tile"));
+  var i = 0;
+  function show(n) {
+    i = (n + tiles.length) % tiles.length;
+    var t = tiles[i];
+    img.src = t.getAttribute("data-full");
+    img.alt = t.querySelector("img").alt;
+    cap.textContent = t.getAttribute("data-caption") || "";
+  }
+  tiles.forEach(function (t, n) {
+    t.addEventListener("click", function () { show(n); box.showModal(); });
+  });
+  box.addEventListener("click", function (e) {
+    var a = e.target.getAttribute && e.target.getAttribute("data-lb");
+    if (a === "close" || e.target === box) box.close();
+    else if (a === "prev") show(i - 1);
+    else if (a === "next") show(i + 1);
+  });
+  box.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft") show(i - 1);
+    if (e.key === "ArrowRight") show(i + 1);
+  });
+})();
+
+// Annotated photo: link numbered spots and legend items
+(function () {
+  var spots = document.querySelectorAll(".spot");
+  var items = document.querySelectorAll(".glass-legend li");
+  if (!spots.length) return;
+  function set(n) {
+    spots.forEach(function (s) { s.classList.toggle("is-on", s.getAttribute("data-spot") === n); });
+    items.forEach(function (l) { l.classList.toggle("is-on", l.getAttribute("data-spot") === n); });
+  }
+  spots.forEach(function (s) {
+    var n = s.getAttribute("data-spot");
+    s.addEventListener("mouseenter", function () { set(n); });
+    s.addEventListener("focus", function () { set(n); });
+    s.addEventListener("click", function () { set(n); });
+  });
+  items.forEach(function (l) {
+    l.addEventListener("mouseenter", function () { set(l.getAttribute("data-spot")); });
+  });
+})();
