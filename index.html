@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Music Technology at Union College</title>
+<meta name="description" content="The Music Technology minor at Union College connects music, engineering, computer science, and digital arts. Open to all students.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Zilla+Slab:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  .intro { padding-block: clamp(3rem, 8vw, 5.5rem) clamp(2rem, 5vw, 3rem); }
+  .intro h1 { font-size: clamp(2.6rem, 1.6rem + 5vw, 5rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-top: 0.75rem; }
+  .intro p { font-size: var(--step-1); color: var(--ink-soft); max-width: 38rem; margin-top: 1.25rem; }
+  .split { display: grid; gap: clamp(2rem, 5vw, 4rem); grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 52rem) { .split { grid-template-columns: 1fr; } }
+  .checks { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+  .checks li { padding: 0.75rem 0; border-bottom: 1px solid var(--line); }
+  .req { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 1.5rem; }
+  .req div { background: var(--surface); padding: 1.1rem; }
+  .req strong { display: block; font-family: var(--font-display); font-size: 2.2rem; line-height: 1; color: var(--garnet-text); }
+  .req span { color: var(--ink-soft); font-size: 0.95rem; }
+  .places { display: grid; gap: 1.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 48rem) { .places { grid-template-columns: 1fr; } }
+  .place { background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; }
+  .place img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .place-body { padding: 1.25rem 1.25rem 1.5rem; display: grid; gap: 0.6rem; }
+  .place-body .room-no { font-family: var(--font-mono); font-size: 0.78rem; color: var(--garnet-text); letter-spacing: 0.06em; }
+  .place-body p { color: var(--ink-soft); }
+  .place .btn { justify-self: start; margin-top: 0.4rem; }
+  .courses { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 56rem) { .courses { grid-template-columns: 1fr; } }
+  .course { background: var(--bg); padding: 1.5rem; display: grid; gap: 0.5rem; align-content: start; }
+  .course .code { font-family: var(--font-mono); font-size: 0.82rem; color: var(--garnet-text); letter-spacing: 0.06em; }
+  .course p { color: var(--ink-soft); font-size: 0.97rem; }
+  .note { margin-top: 1.25rem; color: var(--muted); font-size: var(--step--1); }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./">
+      <span class="brand-college">Union College</span>
+      <span class="brand-program">Music Technology</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="./" aria-current="page">Program</a>
+      <a href="tardis/">TARDIS</a>
+      <a href="#courses">Courses</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="intro">
+    <div class="wrap">
+      <span class="eyebrow">Music Technology Minor</span>
+      <h1>Compose. Record. Experiment.</h1>
+      <p>Union's Music Technology minor brings together music, engineering, computer science, and digital arts. Students learn to compose, record, mix, and build audio technology. It is open to all students, and no musical background is needed.</p>
+    </div>
+  </section>
+  <div class="rail" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <section class="section" id="minor" aria-labelledby="minor-title">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">The minor</span>
+        <h2 id="minor-title" style="margin-top:0.5rem">Six courses across disciplines</h2>
+        <div class="req">
+          <div><strong>3</strong><span>Required courses</span></div>
+          <div><strong>3</strong><span>Electives: one music, one technology, one from either</span></div>
+        </div>
+        <p class="note">Technology electives come from Electrical, Computer, and Biomedical Engineering, Computer Science, and Visual Arts. See the <a href="https://www.union.edu/music-technology/courses-and-requirements">official requirements</a> and the <a href="https://catalog.union.edu">academic catalog</a>.</p>
+      </div>
+      <ul class="checks">
+        <li>Open to all students, with no musical background needed</li>
+        <li>Combines music, engineering, computer science, and digital arts</li>
+        <li>Compose, record, mix, and build audio technology</li>
+        <li>Flexible course options tailored to your interests</li>
+        <li>Hands-on, collaborative work in the studio and the lab</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section alt" id="facilities" aria-labelledby="facilities-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Facilities</span>
+        <h2 id="facilities-title">Where the work happens</h2>
+      </div>
+      <div class="places">
+        <article class="place">
+          <img src="assets/img/tardis/drums-1000.jpg" alt="A student plays drums in the TARDIS live room." loading="lazy">
+          <div class="place-body">
+            <span class="room-no">PETER IRVING WOLD CENTER</span>
+            <h3>TARDIS</h3>
+            <p>The Technology, Acoustics, Research, Design and Instructional Studio: a low noise floor recording studio and acoustics lab for recording, mixing, sound design, and research.</p>
+            <a class="btn btn-primary" href="tardis/">Explore TARDIS</a>
+          </div>
+        </article>
+        <article class="place">
+          <div class="room-photo blank" style="aspect-ratio:16/9;display:grid;place-items:center;background:repeating-linear-gradient(135deg,var(--surface-2) 0 10px,var(--bg) 10px 20px);color:var(--muted);font-family:var(--font-mono);font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase" role="img" aria-label="Photo of the Music Technology Studio coming soon">Photo coming soon</div>
+          <div class="place-body">
+            <span class="room-no">TAYLOR MUSIC CENTER</span>
+            <h3>Music Technology Studio</h3>
+            <p>A computer lab for hands-on coursework with digital audio workstations, MIDI controllers, audio interfaces, and studio hardware.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="courses" aria-labelledby="courses-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Courses</span>
+        <h2 id="courses-title">Where most students start</h2>
+      </div>
+      <div class="courses">
+        <article class="course">
+          <span class="code">AMU 140</span>
+          <h3>Transforming Sound, Making Music</h3>
+          <p>An introduction to organizing sound in meaningful ways with computers. Develop critical listening skills, analyze electronic works, and compose original music.</p>
+        </article>
+        <article class="course">
+          <span class="code">AMU 240</span>
+          <h3>Recording and Mixing Sound</h3>
+          <p>Hands-on work with audio hardware and software, from microphone setup and signal processing to professional recording, mixing, and production.</p>
+        </article>
+        <article class="course">
+          <span class="code">ECE 102</span>
+          <h3>Introduction to Audio Electronics</h3>
+          <p>Fundamental audio electronics through projects: building basic circuits, working with microcontrollers, and making MIDI controllers.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="contact" aria-labelledby="contact-title">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Get in touch</span>
+        <h2 id="contact-title" style="margin-top:0.5rem">Questions about the minor?</h2>
+      </div>
+      <div class="prose">
+        <p>Connect with Professor Chris Chandler, Music Technology Program Director.</p>
+        <p><code class="mono" id="email" style="user-select:all">chandlec@union.edu</code> <button class="btn btn-ghost" type="button" data-copy="email" style="padding:0.3rem 0.7rem;font-size:0.85rem;cursor:pointer;background:none">Copy</button></p>
+        <p><a href="https://www.union.edu/music-technology">Music Technology on union.edu</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Music Technology at Union</span>
+      <p>An interdisciplinary minor connecting music, engineering, computer science, and digital arts.</p>
+    </div>
+    <div>
+      <span class="eyebrow">Visit</span>
+      <ul>
+        <li>TARDIS: Peter Irving Wold Center</li>
+        <li>Music Technology Studio: Taylor Music Center</li>
+      </ul>
+    </div>
+    <div>
+      <span class="eyebrow">Links</span>
+      <ul>
+        <li><a href="https://www.union.edu/music-technology">Music Technology on union.edu</a></li>
+        <li><a href="https://www.union.edu/music">Department of Music</a></li>
+        <li><a href="https://github.com/Union-Music-Technology">Union Music Technology on GitHub</a></li>
+      </ul>
+    </div>
+    <p class="foot-note">Union College, Schenectady, New York. Photos by Union College Communications and Marketing.</p>
+  </div>
+</footer>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
