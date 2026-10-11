@@ -174,3 +174,4 @@ figcaption { font-size: var(--step--1); color: var(--muted); margin-top: 0.6rem;
 .spot:hover, .spot.is-on { background: #e8c97a; color: #1d1517; border-color: #e8c97a; transform: translate(-50%, -50%) scale(1.15); }
 @keyframes spot-pulse { 0% { box-shadow: 0 0 0 0 rgba(232, 201, 122, 0.55); } 70%, 100% { box-shadow: 0 0 0 12px rgba(232, 201, 122, 0); } }
 @media (max-width: 30rem) { .spot { width: 1.6rem; height: 1.6rem; font-size: 0.72rem; } }
+.room-photo--closet { object-position: 50% 40%; }
