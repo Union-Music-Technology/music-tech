@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<?!= include_('Styles') ?>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div>
+      <span class="eyebrow">Union College &middot; Music Technology</span>
+      <h1 style="font-size:1.3rem">Members portal</h1>
+    </div>
+    <span class="who" id="who"><?= email ?></span>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Portal sections"></nav>
+</header>
+<main id="view" aria-live="polite"><p class="loading">Loading&hellip;</p></main>
+
+<?!= include_('Rules') ?>
+<?!= include_('Handbook') ?>
+<?!= include_('App') ?>
+</body>
+</html>

@@ -1,0 +1,118 @@
+{
+  "_readme": "Controls what the public site shows. A space appears on the home page only when published is true. Equipment appears only when status is confirmed (and public is not false). Add ?preview to any page URL to see drafts and unconfirmed items. See README.md.",
+
+  "equipmentFeed": "",
+
+  "spaces": [
+    {
+      "id": "tardis",
+      "name": "TARDIS",
+      "place": "Peter Irving Wold Center",
+      "rooms": "Wold 030, 030b, 031",
+      "href": "tardis/",
+      "image": "assets/img/tardis/control-room-wide-1000.jpg",
+      "imageAlt": "The TARDIS control room, looking through the window into the live room.",
+      "blurb": "The Technology, Acoustics, Research, Design and Instructional Studio: a low noise floor recording studio and acoustics lab for recording, mixing, sound design, and research.",
+      "published": true
+    },
+    {
+      "id": "studio",
+      "name": "Music Technology Studio",
+      "place": "Taylor Music Center",
+      "rooms": "Room 122",
+      "href": "studio/",
+      "image": "assets/img/studio/mts-room-1000.jpg",
+      "imageAlt": "The Music Technology Studio: rows of iMac workstations with MIDI keyboards facing a teaching station with a large display and studio monitors.",
+      "blurb": "A computer lab for hands-on coursework. Every station has an iMac, a MIDI keyboard, an audio interface, a microphone, and headphones, and the teaching station drives a large display and studio monitors.",
+      "published": true
+    },
+    {
+      "id": "advanced-studio",
+      "name": "Advanced Studio",
+      "place": "",
+      "rooms": "",
+      "href": "advanced-studio/",
+      "image": "",
+      "imageAlt": "",
+      "blurb": "A workstation room for advanced projects and the home base for the concert recording system.",
+      "published": false
+    },
+    {
+      "id": "tech-booth",
+      "name": "Tech Booth",
+      "place": "",
+      "rooms": "",
+      "href": "tech-booth/",
+      "image": "",
+      "imageAlt": "",
+      "blurb": "A small production space being rebuilt for student use.",
+      "published": false
+    },
+    {
+      "id": "emerson",
+      "name": "Emerson Auditorium",
+      "place": "",
+      "rooms": "",
+      "href": "emerson/",
+      "image": "",
+      "imageAlt": "",
+      "blurb": "Concert sound and recording for Music Department ensembles, recitals, and visiting artists.",
+      "published": false
+    }
+  ],
+
+  "equipment": [
+    { "space": "tardis", "category": "Console and I/O", "name": "Allen & Heath SQ5", "detail": "Digital mixing console, control room", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Console and I/O", "name": "Allen & Heath DT168", "detail": "Digital I/O expander, live room rack", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Console and I/O", "name": "Mackie 1642VLZ4", "detail": "Analog mixer", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Monitoring", "name": "Adam Audio S3X-H", "detail": "Active studio monitors", "qty": null, "status": "confirmed" },
+    { "space": "tardis", "category": "Monitoring", "name": "Lipinski mains and subwoofers", "detail": "Passive monitors with power amplifiers", "qty": null, "status": "confirmed" },
+    { "space": "tardis", "category": "Monitoring", "name": "Mackie HM-800", "detail": "Headphone amplifier, live room", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Toolkit", "name": "Personal monitor mixers", "detail": "Each performer sets their own headphone mix", "qty": null, "status": "confirmed" },
+    { "space": "tardis", "category": "Toolkit", "name": "Cloudlifter", "detail": "Inline gain for low-output mics", "qty": null, "status": "confirmed" },
+    { "space": "tardis", "category": "Toolkit", "name": "Direct boxes", "detail": "For instruments and line sources", "qty": null, "status": "confirmed" },
+    { "space": "tardis", "category": "Toolkit", "name": "Stereo bars, pop filters, cradles", "detail": "For stereo and vocal setups", "qty": null, "status": "confirmed" },
+    { "space": "tardis", "category": "Video", "name": "BirdDog camera system", "detail": "Purchased summer 2026; installation in progress", "qty": null, "status": "unverified" },
+    { "space": "tardis", "category": "Condenser microphones", "name": "AKG C414 XLII", "detail": "", "qty": 2, "status": "confirmed" },
+    { "space": "tardis", "category": "Condenser microphones", "name": "Neumann KM 184", "detail": "", "qty": 2, "status": "confirmed" },
+    { "space": "tardis", "category": "Condenser microphones", "name": "Shure KSM141", "detail": "", "qty": 2, "status": "confirmed" },
+    { "space": "tardis", "category": "Condenser microphones", "name": "Audio-Technica AT4050", "detail": "", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Condenser microphones", "name": "Shure KSM44", "detail": "", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Dynamic microphones", "name": "Shure SM57", "detail": "", "qty": 4, "status": "confirmed" },
+    { "space": "tardis", "category": "Dynamic microphones", "name": "Electro-Voice RE20", "detail": "", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Dynamic microphones", "name": "Sennheiser e609", "detail": "", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Dynamic microphones", "name": "Shure SM7B", "detail": "", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Ribbon microphones", "name": "Pinnacle Fat Top", "detail": "Stereo pair", "qty": 2, "status": "confirmed" },
+    { "space": "tardis", "category": "Specialty microphones", "name": "Audix DP7", "detail": "Seven-piece drum kit set", "qty": 7, "status": "confirmed" },
+    { "space": "tardis", "category": "Specialty microphones", "name": "RØDE SoundField NT-SF1", "detail": "Ambisonic, 360° capture", "qty": 1, "status": "confirmed" },
+    { "space": "tardis", "category": "Specialty microphones", "name": "Universal Audio Sphere DLX", "detail": "Modeling microphone", "qty": 1, "status": "confirmed" },
+
+    { "space": "studio", "category": "At every station", "name": "iMac", "detail": "Managed lab computer", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "At every station", "name": "Focusrite Scarlett 6i6", "detail": "USB audio interface", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "At every station", "name": "MIDI keyboard", "detail": "", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "At every station", "name": "Microphone", "detail": "", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "At every station", "name": "Headphones", "detail": "", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "At every station", "name": "Shure SM58", "detail": "Station microphone model, to confirm", "qty": null, "status": "unverified" },
+    { "space": "studio", "category": "At every station", "name": "Yamaha MIDI keyboards", "detail": "Keyboard model, to confirm", "qty": null, "status": "unverified" },
+    { "space": "studio", "category": "Teaching station", "name": "Instructor iMac", "detail": "Drives the room display and monitors", "qty": 1, "status": "confirmed" },
+    { "space": "studio", "category": "Teaching station", "name": "Large display", "detail": "", "qty": 1, "status": "confirmed" },
+    { "space": "studio", "category": "Teaching station", "name": "Studio monitors", "detail": "", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "Teaching station", "name": "Speck mixer", "detail": "Plays any student station through the room monitors", "qty": 1, "status": "confirmed" },
+    { "space": "studio", "category": "Teaching station", "name": "Crestron control panel", "detail": "Room power, display, and source selection", "qty": 1, "status": "confirmed" },
+    { "space": "studio", "category": "Teaching station", "name": "Ableton Push and hardware synthesizer", "detail": "To confirm", "qty": null, "status": "unverified" },
+    { "space": "studio", "category": "Software", "name": "Ableton Live", "detail": "Recording, sequencing, and sound design", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "Software", "name": "MuseScore", "detail": "Notation", "qty": null, "status": "confirmed" },
+    { "space": "studio", "category": "Software", "name": "Focusrite Control", "detail": "Interface routing", "qty": null, "status": "confirmed" },
+
+    { "space": "advanced-studio", "category": "Workstation", "name": "Computer workstation", "detail": "Model and software list to confirm", "qty": null, "status": "unverified" },
+    { "space": "advanced-studio", "category": "Concert recording", "name": "Antelope Audio interface", "detail": "Location and model to confirm", "qty": null, "status": "unverified" },
+    { "space": "advanced-studio", "category": "Concert recording", "name": "Field recorder and video camera kit", "detail": "Concert go-bag contents to confirm", "qty": null, "status": "unverified" },
+
+    { "space": "tech-booth", "category": "To inventory", "name": "Equipment purchased summer 2026", "detail": "Inventory in progress", "qty": null, "status": "unverified" },
+
+    { "space": "emerson", "category": "Front of house", "name": "Allen & Heath SQ5", "detail": "Digital mixer with Dante card, installed 2025; to confirm", "qty": 1, "status": "unverified" },
+    { "space": "emerson", "category": "Front of house", "name": "Allen & Heath DT168", "detail": "Stage box over Dante, media rack; to confirm", "qty": 1, "status": "unverified" },
+    { "space": "emerson", "category": "Recording", "name": "Concert recording system", "detail": "Permanent install planned; contents to confirm", "qty": null, "status": "unverified" },
+    { "space": "emerson", "category": "Recording", "name": "Livestream package", "detail": "To confirm", "qty": null, "status": "unverified" }
+  ]
+}

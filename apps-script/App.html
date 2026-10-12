@@ -1,0 +1,613 @@
+<script>
+/*
+ * Portal client. Builds every element with the DOM API and textContent, never
+ * innerHTML, so text from the sheet can't inject markup. Role checks here only
+ * decide what to show; the server re-checks every action.
+ */
+(function () {
+  var boot = null;
+  var view = document.getElementById("view");
+  var tabsEl = document.getElementById("tabs");
+  var RANK = { user: 1, workstudy: 2, admin: 3 };
+
+  /* ---------- helpers ---------- */
+
+  function call(action, payload) {
+    return new Promise(function (resolve, reject) {
+      google.script.run
+        .withSuccessHandler(function (r) { r && r.ok ? resolve(r.data) : reject(new Error(r ? r.error : "No response.")); })
+        .withFailureHandler(function () { reject(new Error("Couldn't reach the server. Check your connection and try again.")); })
+        .api(action, payload || {});
+    });
+  }
+
+  function safeUrl(u) { return /^https:\/\//.test(String(u || "")) ? String(u) : null; }
+
+  // h("tag.class", {attrs}, [children]); strings become text nodes.
+  function h(sel, attrs, kids) {
+    var parts = sel.split(".");
+    var n = document.createElement(parts[0] || "div");
+    if (parts.length > 1) n.className = parts.slice(1).join(" ");
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (v == null || v === false) return;
+      if (k === "text") n.textContent = v;
+      else if (k === "value") { n.value = v; n.defaultValue = v; }
+      else if (k === "checked") { n.checked = n.defaultChecked = !!v; }
+      else if (k === "selected") { n.selected = n.defaultSelected = !!v; }
+      else if (k === "on") Object.keys(v).forEach(function (ev) { n.addEventListener(ev, v[ev]); });
+      else if (k === "href") { var u = safeUrl(v); if (u) { n.href = u; n.target = "_blank"; n.rel = "noopener noreferrer"; } }
+      else if (k in n && k !== "list" && k !== "form") n[k] = v;
+      else n.setAttribute(k, v === true ? "" : v);
+    });
+    (kids || []).forEach(function (c) {
+      if (c == null || c === false) return;
+      n.appendChild(typeof c === "string" || typeof c === "number" ? document.createTextNode(String(c)) : c);
+    });
+    return n;
+  }
+
+  function can(min) { return boot && RANK[boot.me.role] >= RANK[min]; }
+  function spaceName(id) { var s = boot.spaces.filter(function (x) { return x.id === id; })[0]; return s ? s.name : id; }
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    return isNaN(d) ? String(iso) : d.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+
+  function options(list, selected, labeler) {
+    return list.map(function (v) {
+      var val = typeof v === "object" ? v.value : v;
+      var label = typeof v === "object" ? v.label : (labeler ? labeler(v) : v);
+      return h("option", { value: val, selected: String(val) === String(selected), text: label });
+    });
+  }
+  function spaceOptions(selected) { return options(boot.spaces.map(function (s) { return { value: s.id, label: s.name }; }), selected); }
+
+  function field(label, input) { return h("label", {}, [label, input]); }
+  function check(label, input) { return h("label.check", {}, [input, label]); }
+
+  function badge(text, kind) { return h("span.badge" + (kind ? "." + kind : ""), { text: text }); }
+  var STATUS_KIND = { approved: "ok", resolved: "ok", confirmed: "ok", ok: "ok", pending: "warn", open: "warn", "in progress": "warn",
+                      unverified: "warn", "needs attention": "warn", declined: "bad", cancelled: "", "out of service": "bad", missing: "bad", high: "bad" };
+  function statusBadge(s) { return badge(s, STATUS_KIND[s]); }
+
+  function flash(container, msg, ok) {
+    var old = container.querySelector(".flash");
+    if (old) old.remove();
+    var f = h("div.flash." + (ok ? "ok" : "err"), { role: ok ? "status" : "alert", text: msg });
+    container.insertBefore(f, container.firstChild);
+    if (ok) setTimeout(function () { f.remove(); }, 5000);
+  }
+
+  // Wraps a form: collects named fields, disables the button while saving, shows the result.
+  function wire(form, action, opts) {
+    opts = opts || {};
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var data = {};
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (!el.name) return;
+        if (el.type === "checkbox") {
+          if (el.dataset.multi) { (data[el.name] = data[el.name] || []); if (el.checked) data[el.name].push(el.value); }
+          else data[el.name] = el.checked;
+        } else data[el.name] = el.value;
+      });
+      if (opts.extra) Object.assign(data, opts.extra());
+      var btn = form.querySelector("button[type=submit]");
+      if (btn) btn.disabled = true;
+      call(action, data).then(function (res) {
+        flash(form, opts.done || "Saved.", true);
+        if (opts.reset !== false) form.reset();
+        if (opts.after) opts.after(res);
+      }).catch(function (err) { flash(form, err.message, false); })
+        .then(function () { if (btn) btn.disabled = false; });
+    });
+    return form;
+  }
+
+  function loading(box) { box.textContent = ""; box.appendChild(h("p.loading", { text: "Loading…" })); }
+  function failed(box, err) { box.textContent = ""; box.appendChild(h("div.flash.err", { role: "alert", text: err.message })); }
+
+  /* ---------- tabs ---------- */
+
+  var TABS = [
+    { id: "home", label: "Home", min: "user", render: renderHome },
+    { id: "rules", label: "Rules", min: "user", render: renderRules },
+    { id: "reserve", label: "Reserve", min: "user", render: renderReserve, show: function () { return boot.reservations.calendars.length > 0; } },
+    { id: "report", label: "Report a problem", min: "user", render: renderReport },
+    { id: "equipment", label: "Equipment", min: "user", render: renderEquipment },
+    { id: "queue", label: "Queue", min: "workstudy", render: renderQueue },
+    { id: "hours", label: "Hours", min: "workstudy", render: renderHours },
+    { id: "handbook", label: "Handbook", min: "workstudy", render: renderHandbook },
+    { id: "access", label: "Access", min: "admin", render: renderAccess },
+    { id: "activity", label: "Activity", min: "admin", render: renderActivity }
+  ];
+
+  function visibleTabs() { return TABS.filter(function (t) { return can(t.min) && (!t.show || t.show()); }); }
+
+  function go(id) {
+    var tabs = visibleTabs();
+    var tab = tabs.filter(function (t) { return t.id === id; })[0] || tabs[0];
+    Array.prototype.forEach.call(tabsEl.children, function (b) { b.setAttribute("aria-selected", b.dataset.id === tab.id ? "true" : "false"); });
+    view.textContent = "";
+    tab.render(view);
+    try { google.script.history.replace(null, null, tab.id); } catch (e) {}
+  }
+
+  function buildTabs() {
+    tabsEl.textContent = "";
+    visibleTabs().forEach(function (t) {
+      tabsEl.appendChild(h("button", { type: "button", role: "tab", "data-id": t.id, text: t.label, on: { click: function () { go(t.id); } } }));
+    });
+  }
+
+  /* ---------- Home ---------- */
+
+  function renderHome(box) {
+    var me = boot.me;
+    var roleLabel = { admin: "Admin", workstudy: "Work-study", user: "Approved user" }[me.role];
+    box.appendChild(h("div.card", {}, [
+      h("h2", { text: "Hi" + (me.name ? ", " + me.name.split(" ")[0] : "") }),
+      h("p", {}, ["You're signed in as ", h("strong", { text: me.email }), ". ", badge(roleLabel, "brand"),
+                  me.area ? h("span.muted", { text: "  " + me.area }) : null])
+    ]));
+
+    var grid = h("div.grid2");
+    var ann = h("div.card", {}, [h("h2", { text: "Announcements" })]);
+    if (!boot.announcements.length) ann.appendChild(h("p.muted", { text: "Nothing posted right now." }));
+    else ann.appendChild(h("ul.list", {}, boot.announcements.map(function (a) {
+      return h("li", {}, [
+        h("div.row", {}, [h("strong", { text: a.title }), a.pinned ? badge("Pinned", "brand") : null,
+                          a.audience === "workstudy" ? badge("Work-study") : null]),
+        h("p.pre", { text: a.body }),
+        h("p.small.muted", { text: fmtDate(a.created_at) + (a.author ? " · " + a.author : "") })
+      ]);
+    })));
+    grid.appendChild(ann);
+
+    var links = h("div.card", {}, [h("h2", { text: "Links" })]);
+    if (!boot.links.length) links.appendChild(h("p.muted", { text: can("admin") ? "Add links in the Links tab of the portal spreadsheet." : "No links yet." }));
+    else links.appendChild(h("ul.list", {}, boot.links.map(function (l) {
+      return h("li", {}, [h("a", { href: l.url, text: l.title }), l.notes ? h("span.small.muted", { text: l.notes }) : null]);
+    })));
+    grid.appendChild(links);
+    box.appendChild(grid);
+
+    if (can("workstudy")) {
+      var f = h("form", {}, [
+        h("h2", { text: "Post an announcement" }),
+        field("Title", h("input", { name: "title", required: true, maxLength: 120 })),
+        field("Message", h("textarea", { name: "body", required: true, maxLength: 2000 })),
+        field("Who sees it", h("select", { name: "audience" }, options([{ value: "all", label: "Everyone in the portal" }, { value: "workstudy", label: "Work-study and admins" }]))),
+        can("admin") ? check("Pin to top", h("input", { type: "checkbox", name: "pinned" })) : null,
+        h("button.btn", { type: "submit", text: "Post" })
+      ]);
+      box.appendChild(h("div.card", {}, [wire(f, "saveAnnouncement", { done: "Posted. It shows up the next time the portal loads.", after: refreshBoot })]));
+    }
+  }
+
+  function refreshBoot() { call("bootstrap").then(function (b) { boot = b; }); }
+
+  /* ---------- Rules / Handbook ---------- */
+
+  function renderRules(box) { box.appendChild(document.getElementById("tpl-rules").content.cloneNode(true)); }
+
+  function renderHandbook(box) {
+    if (boot.team.length) {
+      box.appendChild(h("div.card", {}, [
+        h("h2", { text: "Team" }),
+        h("ul.list", {}, boot.team.map(function (t) {
+          return h("li", {}, [h("strong", { text: t.name || t.email }),
+                              h("span.small.muted", { text: [t.area, t.email].filter(Boolean).join(" · ") })]);
+        }))
+      ]));
+    }
+    box.appendChild(document.getElementById("tpl-handbook").content.cloneNode(true));
+  }
+
+  /* ---------- Reserve ---------- */
+
+  function renderReserve(box) {
+    var R = boot.reservations;
+    var intro = h("div.card", {}, [
+      h("h2", { text: "Reserve TARDIS" }),
+      h("p", { text: "Up to " + R.weeklyHourCap + " reserved hours per week, booked in 30-minute steps, up to " + R.maxDaysAhead +
+               " days ahead. Sessions with more than " + R.supervisionThreshold + " musicians need a work-study student present." }),
+      h("p.small.muted", { text: R.mode === "auto"
+        ? "Small sessions are booked right away and you'll get a calendar invitation."
+        : R.mode === "request" ? "A work-study student or Prof. Chandler approves each request, then you'll get a calendar invitation."
+        : "Portal booking is turned off right now." })
+    ]);
+    box.appendChild(intro);
+    if (R.mode === "off") return;
+
+    var times = [];
+    for (var m = R.openHour * 60; m < R.closeHour * 60; m += 30) {
+      var hh = Math.floor(m / 60), mm = m % 60;
+      var label = ((hh % 12) || 12) + ":" + (mm ? "30" : "00") + (hh < 12 ? " am" : " pm");
+      times.push({ value: (hh < 10 ? "0" : "") + hh + ":" + (mm ? "30" : "00"), label: label });
+    }
+    var lengths = [];
+    for (var n = 30; n <= R.maxBookingHours * 60; n += 30) lengths.push({ value: n, label: (n / 60) + (n === 60 ? " hour" : " hours") });
+    var today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+
+    var mine = h("div.stack");
+    var f = h("form", {}, [
+      h("h2", { text: "New booking" }),
+      field("Room", h("select", { name: "calendar", required: true }, options(R.calendars.map(function (c) { return { value: c.key, label: c.name }; })))),
+      h("div.two", {}, [
+        field("Date", h("input", { type: "date", name: "date", required: true, min: today.toISOString().slice(0, 10) })),
+        field("Start", h("select", { name: "start", required: true }, options(times, "14:00"))),
+        field("Length", h("select", { name: "minutes", required: true }, options(lengths, 120))),
+        field("Musicians", h("input", { type: "number", name: "musicians", min: 1, max: 40, value: 1, required: true }))
+      ]),
+      field("What you're working on", h("textarea", { name: "purpose", required: true, maxLength: 300, placeholder: "e.g. Tracking vocals for my AMU 240 project" })),
+      h("button.btn", { type: "submit", text: "Request booking" })
+    ]);
+    box.appendChild(h("div.grid2", {}, [
+      h("div.card", {}, [wire(f, "requestReservation", { done: "Request sent.", after: function () { loadMine(mine); } })]),
+      h("div.card", {}, [h("h2", { text: "Your bookings" }), mine])
+    ]));
+    loadMine(mine);
+  }
+
+  function reservationItem(r, actions) {
+    return h("li", {}, [
+      h("div.row", {}, [h("strong", { text: r.room }), statusBadge(r.status), r.note ? h("span.small.muted", { text: r.note }) : null]),
+      h("span", { text: r.when }),
+      h("span.small.muted", { text: (r.mine ? "" : r.name + " · ") + r.musicians + " musician" + (r.musicians == 1 ? "" : "s") + " · " + r.purpose }),
+      actions && actions.length ? h("div.row", {}, actions) : null
+    ]);
+  }
+
+  function loadMine(box) {
+    loading(box);
+    call("listReservations", {}).then(function (rows) {
+      box.textContent = "";
+      if (!rows.length) { box.appendChild(h("p.muted", { text: "No upcoming bookings." })); return; }
+      box.appendChild(h("ul.list", {}, rows.map(function (r) {
+        var live = r.status === "pending" || r.status === "approved";
+        return reservationItem(r, live && new Date(r.start) > new Date() ? [
+          h("button.btn.ghost.sm", { type: "button", text: "Cancel", on: { click: function (e) {
+            if (!confirm("Cancel this booking?")) return;
+            e.target.disabled = true;
+            call("cancelReservation", { id: r.id }).then(function () { loadMine(box); }).catch(function (err) { flash(box, err.message); e.target.disabled = false; });
+          } } })
+        ] : null);
+      })));
+    }).catch(function (err) { failed(box, err); });
+  }
+
+  /* ---------- Report ---------- */
+
+  function renderReport(box) {
+    var mine = h("div.stack");
+    var f = h("form", {}, [
+      h("h2", { text: "Report a problem" }),
+      h("p.small.muted", { text: "Broken, missing, or acting up? Tell us here and the work-study team will follow up." }),
+      h("div.two", {}, [
+        field("Space", h("select", { name: "space", required: true }, spaceOptions("tardis"))),
+        field("How urgent", h("select", { name: "severity" }, options([
+          { value: "low", label: "Low: annoying, still usable" }, { value: "medium", label: "Medium: something doesn't work" },
+          { value: "high", label: "High: blocks sessions or is unsafe" }], "medium")))
+      ]),
+      field("Equipment (if any)", h("input", { name: "equipment", maxLength: 100, placeholder: "e.g. SM57 #3, left Adam monitor" })),
+      field("What happened", h("textarea", { name: "description", required: true, maxLength: 2000 })),
+      h("button.btn", { type: "submit", text: "Send report" })
+    ]);
+    box.appendChild(h("div.grid2", {}, [
+      h("div.card", {}, [wire(f, "reportIssue", { done: "Thanks. The team has it.", after: function () { loadIssues(mine, {}); } })]),
+      h("div.card", {}, [h("h2", { text: can("workstudy") ? "Recent reports" : "Your reports" }), mine])
+    ]));
+    loadIssues(mine, {});
+  }
+
+  function issueItem(i, editable, onSaved) {
+    var li = h("li", {}, [
+      h("div.row", {}, [h("strong", { text: spaceName(i.space) + (i.equipment ? ": " + i.equipment : "") }), statusBadge(i.status), statusBadge(i.severity)]),
+      h("p.pre", { text: i.description }),
+      h("span.small.muted", { text: fmtDate(i.created_at) + (i.reporter ? " · " + i.reporter : "") + (i.assignee ? " · assigned to " + i.assignee : "") }),
+      i.resolution ? h("p.small", { text: "Resolution: " + i.resolution }) : null
+    ]);
+    if (editable) {
+      var f = h("form", {}, [
+        h("div.two", {}, [
+          field("Status", h("select", { name: "status" }, options(boot.lists.issueStatus, i.status))),
+          field("Assigned to", h("input", { name: "assignee", value: i.assignee || "", maxLength: 100 }))
+        ]),
+        field("Resolution notes", h("input", { name: "resolution", value: i.resolution || "", maxLength: 1000 })),
+        h("button.btn.ghost.sm", { type: "submit", text: "Update" })
+      ]);
+      li.appendChild(h("details", {}, [h("summary", { text: "Update" }), wire(f, "updateIssue", { reset: false, done: "Updated.", extra: function () { return { id: i.id }; }, after: onSaved })]));
+    }
+    return li;
+  }
+
+  function loadIssues(box, filter, editable) {
+    loading(box);
+    call("listIssues", filter).then(function (rows) {
+      box.textContent = "";
+      if (!rows.length) { box.appendChild(h("p.muted", { text: "Nothing here." })); return; }
+      box.appendChild(h("ul.list", {}, rows.slice(0, 50).map(function (i) {
+        return issueItem(i, editable, function () { loadIssues(box, filter, editable); });
+      })));
+    }).catch(function (err) { failed(box, err); });
+  }
+
+  /* ---------- Equipment ---------- */
+
+  function renderEquipment(box) {
+    var ws = can("workstudy");
+    var listBox = h("div.stack");
+    var filter = h("select", { on: { change: function () { load(); } } },
+      [h("option", { value: "", text: "All spaces" })].concat(spaceOptions("")));
+    var formCard = h("div.card");
+
+    function load() {
+      loading(listBox);
+      call("listEquipment", { space: filter.value }).then(function (rows) {
+        listBox.textContent = "";
+        if (!rows.length) { listBox.appendChild(h("p.muted", { text: "No equipment listed yet." })); return; }
+        var groups = {}, order = [];
+        rows.forEach(function (r) {
+          var k = spaceName(r.space) + " · " + (r.category || "Other");
+          if (!groups[k]) { groups[k] = []; order.push(k); }
+          groups[k].push(r);
+        });
+        order.forEach(function (k) {
+          listBox.appendChild(h("h3", { text: k }));
+          listBox.appendChild(h("ul.list", {}, groups[k].map(function (r) {
+            return h("li", {}, [
+              h("div.row", {}, [
+                h("strong", { text: r.name }), r.qty ? h("span.mono.small", { text: "× " + r.qty }) : null,
+                r.status !== "confirmed" ? statusBadge(r.status) : null,
+                r.condition && r.condition !== "ok" ? statusBadge(r.condition) : null,
+                ws && !r["public"] ? badge("Hidden from site") : null,
+                h("span.spacer"),
+                ws ? h("button.btn.ghost.sm", { type: "button", text: "Edit", on: { click: function () { showForm(r); } } }) : null
+              ]),
+              r.detail ? h("span.small.muted", { text: r.detail }) : null,
+              ws && r.notes ? h("span.small", { text: "Notes: " + r.notes }) : null
+            ]);
+          })));
+        });
+      }).catch(function (err) { failed(listBox, err); });
+    }
+
+    function showForm(item) {
+      item = item || { space: filter.value || "tardis", status: "unverified", condition: "ok", "public": true };
+      var f = h("form", {}, [
+        h("h2", { text: item.id ? "Edit item" : "Add equipment" }),
+        h("div.two", {}, [
+          field("Space", h("select", { name: "space" }, spaceOptions(item.space))),
+          field("Category", h("input", { name: "category", required: true, maxLength: 60, value: item.category || "", placeholder: "e.g. Dynamic microphones" }))
+        ]),
+        field("Name", h("input", { name: "name", required: true, maxLength: 100, value: item.name || "", placeholder: "Brand and model" })),
+        field("Detail (shown on the public site)", h("input", { name: "detail", maxLength: 200, value: item.detail || "" })),
+        h("div.two", {}, [
+          field("Quantity", h("input", { type: "number", name: "qty", min: 0, max: 999, value: item.qty === "" || item.qty == null ? "" : item.qty })),
+          field("Status", h("select", { name: "status" }, options(boot.lists.equipmentStatus, item.status))),
+          field("Condition", h("select", { name: "condition" }, options(boot.lists.equipmentCondition, item.condition)))
+        ]),
+        field("Where it lives", h("input", { name: "location", maxLength: 100, value: item.location || "", placeholder: "e.g. Closet, shelf B" })),
+        field("Internal notes (never public)", h("textarea", { name: "notes", maxLength: 500, value: item.notes || "" })),
+        check("Show on the public site once confirmed", h("input", { type: "checkbox", name: "public", checked: item["public"] !== false })),
+        h("div.row", {}, [
+          h("button.btn", { type: "submit", text: item.id ? "Save changes" : "Add item" }),
+          item.id ? h("button.btn.ghost", { type: "button", text: "New item instead", on: { click: function () { showForm(null); } } }) : null,
+          item.id && can("admin") ? h("button.btn.ghost", { type: "button", text: "Delete", on: { click: function () {
+            if (!confirm("Delete " + item.name + "? Consider setting status to retired instead.")) return;
+            call("deleteEquipment", { id: item.id }).then(function () { showForm(null); load(); }).catch(function (err) { flash(f, err.message); });
+          } } }) : null
+        ])
+      ]);
+      formCard.textContent = "";
+      formCard.appendChild(wire(f, "saveEquipment", {
+        reset: false, done: "Saved.", extra: function () { return item.id ? { id: item.id } : {}; },
+        after: function (res) { if (!item.id) showForm(null); load(); }
+      }));
+      formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    var listCard = h("div.card", {}, [
+      h("div.row", {}, [h("h2", { text: "Inventory" }), h("span.spacer"), filter]),
+      ws ? h("p.small.muted", { text: "Only confirmed items marked public appear on the website. Unconfirmed items stay hidden until someone checks them in person." }) : null,
+      listBox
+    ]);
+    if (ws) { box.appendChild(h("div.grid2", {}, [listCard, formCard])); showForm(null); }
+    else box.appendChild(listCard);
+    load();
+  }
+
+  /* ---------- Queue (work-study) ---------- */
+
+  function renderQueue(box) {
+    var resBox = h("div.stack"), issueBox = h("div.stack");
+    box.appendChild(h("div.grid2", {}, [
+      h("div.card", {}, [h("h2", { text: "Booking requests" }), resBox]),
+      h("div.card", {}, [h("h2", { text: "Open problems" }), issueBox])
+    ]));
+    loadQueue(resBox);
+    loadIssues(issueBox, { status: "active" }, true);
+  }
+
+  function loadQueue(box) {
+    loading(box);
+    call("listReservations", { scope: "all" }).then(function (rows) {
+      box.textContent = "";
+      var pending = rows.filter(function (r) { return r.status === "pending"; });
+      var upcoming = rows.filter(function (r) { return r.status === "approved" && new Date(r.end) > new Date(); });
+      if (!pending.length) box.appendChild(h("p.muted", { text: "No requests waiting." }));
+      else box.appendChild(h("ul.list", {}, pending.map(function (r) {
+        function decide(decision) {
+          return function (e) {
+            var note = decision === "decline" ? prompt("Reason for declining (sent to the requester):", "") : "";
+            if (note === null) return;
+            e.target.disabled = true;
+            call("reviewReservation", { id: r.id, decision: decision, note: note })
+              .then(function () { loadQueue(box); })
+              .catch(function (err) { flash(box, err.message); e.target.disabled = false; });
+          };
+        }
+        return reservationItem(r, [
+          h("button.btn.sm", { type: "button", text: "Approve", on: { click: decide("approve") } }),
+          h("button.btn.ghost.sm", { type: "button", text: "Decline", on: { click: decide("decline") } })
+        ]);
+      })));
+      if (upcoming.length) {
+        box.appendChild(h("h3", { text: "Coming up" }));
+        box.appendChild(h("ul.list", {}, upcoming.slice(0, 20).map(function (r) { return reservationItem(r); })));
+      }
+    }).catch(function (err) { failed(box, err); });
+  }
+
+  /* ---------- Hours (work-study) ---------- */
+
+  function renderHours(box) {
+    var listBox = h("div.stack");
+    var today = new Date(); today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    var hoursForm = h("form", {}, [
+      h("h2", { text: "Log hours" }),
+      h("div.two", {}, [
+        field("Date", h("input", { type: "date", name: "date", required: true, value: today.toISOString().slice(0, 10) })),
+        field("Hours", h("input", { type: "number", name: "hours", min: 0.25, max: 12, step: 0.25, required: true })),
+        field("Area", h("select", { name: "area" }, options(boot.areas, boot.me.area && boot.areas.indexOf(boot.me.area) >= 0 ? boot.me.area : "")))
+      ]),
+      field("What you worked on", h("textarea", { name: "description", required: true, maxLength: 1000, placeholder: "e.g. Labeled TARDIS mic cables, about half done" })),
+      h("button.btn", { type: "submit", text: "Log hours" })
+    ]);
+    var checkinForm = h("form", {}, [
+      h("h2", { text: "Weekly check-in" }),
+      h("p.small.muted", { text: "Due Sunday night. Two minutes." }),
+      field("What you did", h("textarea", { name: "did", required: true, maxLength: 500 })),
+      field("What's next", h("textarea", { name: "next", required: true, maxLength: 500 })),
+      field("What's blocking you", h("textarea", { name: "blocking", maxLength: 500, placeholder: "Nothing" })),
+      h("button.btn", { type: "submit", text: "Send check-in" })
+    ]);
+    var reload = function () { loadHours(listBox, ""); };
+    box.appendChild(h("div.grid2", {}, [
+      h("div.card", {}, [wire(hoursForm, "logHours", { done: "Logged.", extra: function () { return { kind: "hours" }; }, after: reload })]),
+      h("div.card", {}, [wire(checkinForm, "logHours", { done: "Check-in sent.", extra: function () { return { kind: "checkin" }; }, after: reload })])
+    ]));
+    box.appendChild(h("div.card", {}, [h("h2", { text: can("admin") ? "Everyone's hours" : "Your entries" }), listBox]));
+    reload();
+  }
+
+  function loadHours(box, email) {
+    loading(box);
+    call("listHours", { email: email }).then(function (res) {
+      box.textContent = "";
+      var people = Object.keys(res.totals);
+      box.appendChild(h("p.small", {}, ["This week (since " + res.weekStart + "): ",
+        people.length ? people.map(function (p) { return p + " " + res.totals[p] + " h"; }).join(" · ") : "no hours yet"]));
+      if (can("admin")) {
+        var emails = [];
+        res.entries.forEach(function (e) { if (emails.indexOf(e.email) < 0) emails.push(e.email); });
+        var pick = h("select", { on: { change: function () { loadHours(box, pick.value); } } },
+          [h("option", { value: "", text: "Everyone" })].concat(options(emails, email)));
+        box.appendChild(field("Show", pick));
+      }
+      if (!res.entries.length) { box.appendChild(h("p.muted", { text: "No entries yet." })); return; }
+      box.appendChild(h("ul.list", {}, res.entries.map(function (e) {
+        return h("li", {}, [
+          h("div.row", {}, [h("strong", { text: e.kind === "checkin" ? "Check-in" : e.hours + " h · " + e.area }),
+                            h("span.small.muted", { text: e.date + (can("admin") ? " · " + (e.name || e.email) : "") })]),
+          h("p.pre.small", { text: e.description })
+        ]);
+      })));
+    }).catch(function (err) { failed(box, err); });
+  }
+
+  /* ---------- Access (admin) ---------- */
+
+  function renderAccess(box) {
+    var listBox = h("div.stack");
+    var formCard = h("div.card");
+
+    function showForm(row) {
+      row = row || { role: "user", active: true, spaces: "tardis" };
+      var have = String(row.spaces || "").split(/[,\s]+/);
+      var f = h("form", {}, [
+        h("h2", { text: row.email ? "Edit access" : "Give someone access" }),
+        field("Union email", h("input", { type: "email", name: "email", required: true, value: row.email || "", readOnly: !!row.email, placeholder: "name@union.edu" })),
+        field("Name", h("input", { name: "name", required: true, maxLength: 80, value: row.name || "" })),
+        h("div.two", {}, [
+          field("Role", h("select", { name: "role" }, options([
+            { value: "user", label: "User: approved to use spaces" }, { value: "workstudy", label: "Work-study: helps run the site" },
+            { value: "admin", label: "Admin: full control" }], row.role))),
+          field("Access expires", h("input", { type: "date", name: "expires", value: row.expires || "" }))
+        ]),
+        h("fieldset", { style: "border:1px solid var(--line);border-radius:4px;padding:0.6rem 0.8rem" }, [
+          h("legend", { text: "Spaces they can book or use" })
+        ].concat(boot.spaces.map(function (s) {
+          return check(s.name, h("input", { type: "checkbox", name: "spaces", value: s.id, "data-multi": "1", checked: have.indexOf(s.id) >= 0 || have.indexOf("*") >= 0 }));
+        }))),
+        field("Area / role title", h("input", { name: "area", maxLength: 80, value: row.area || "", placeholder: "e.g. TARDIS Operations Lead, AMU 240 Winter" })),
+        field("Notes", h("input", { name: "notes", maxLength: 300, value: row.notes || "" })),
+        check("Active", h("input", { type: "checkbox", name: "active", checked: row.active !== false })),
+        h("div.row", {}, [
+          h("button.btn", { type: "submit", text: "Save" }),
+          row.email ? h("button.btn.ghost", { type: "button", text: "Add someone else", on: { click: function () { showForm(null); } } }) : null
+        ])
+      ]);
+      formCard.textContent = "";
+      formCard.appendChild(wire(f, "saveAccess", { reset: false, done: "Saved. Takes effect within a minute.", after: function () { showForm(null); load(); } }));
+    }
+
+    function load() {
+      loading(listBox);
+      call("listAccess").then(function (rows) {
+        listBox.textContent = "";
+        if (!rows.length) { listBox.appendChild(h("p.muted", { text: "Nobody yet. You (the owner) always have admin access." })); return; }
+        var order = { admin: 0, workstudy: 1, user: 2 };
+        rows.sort(function (a, b) { return (order[a.role] - order[b.role]) || a.name.localeCompare(b.name); });
+        listBox.appendChild(h("ul.list", {}, rows.map(function (r) {
+          return h("li", {}, [
+            h("div.row", {}, [h("strong", { text: r.name || r.email }), badge(r.role, "brand"), r.active ? null : badge("inactive", "bad"),
+                              r.expires ? badge("until " + r.expires) : null, h("span.spacer"),
+                              h("button.btn.ghost.sm", { type: "button", text: "Edit", on: { click: function () { showForm(r); formCard.scrollIntoView({ behavior: "smooth" }); } } })]),
+            h("span.small.muted", { text: [r.email, r.spaces && "Spaces: " + r.spaces, r.area].filter(Boolean).join(" · ") })
+          ]);
+        })));
+      }).catch(function (err) { failed(listBox, err); });
+    }
+
+    box.appendChild(h("div.card", {}, [
+      h("p.small", { text: "You can also edit the Access tab in the portal spreadsheet directly. Each row is one person: email, role (user, workstudy, admin), spaces, and an Active checkbox. Changes apply within a minute." })
+    ]));
+    box.appendChild(h("div.grid2", {}, [h("div.card", {}, [h("h2", { text: "People" }), listBox]), formCard]));
+    showForm(null);
+    load();
+  }
+
+  /* ---------- Activity (admin) ---------- */
+
+  function renderActivity(box) {
+    var listBox = h("div.stack");
+    box.appendChild(h("div.card", {}, [h("h2", { text: "Recent activity" }),
+      h("p.small.muted", { text: "Every change made through the portal, newest first. The full log is in the Audit tab." }), listBox]));
+    loading(listBox);
+    call("listAudit", { limit: 150 }).then(function (rows) {
+      listBox.textContent = "";
+      if (!rows.length) { listBox.appendChild(h("p.muted", { text: "Nothing yet." })); return; }
+      listBox.appendChild(h("ul.list", {}, rows.map(function (r) {
+        return h("li", {}, [
+          h("div.row", {}, [h("strong", { text: r.action }), h("span.small", { text: r.target }), h("span.spacer"), h("span.small.muted", { text: fmtDate(r.timestamp) })]),
+          h("span.small.muted", { text: r.email + " (" + r.role + ")" }),
+          h("details", {}, [h("summary.small", { text: "Details" }), h("p.pre.small.mono", { text: r.details })])
+        ]);
+      })));
+    }).catch(function (err) { failed(listBox, err); });
+  }
+
+  /* ---------- start ---------- */
+
+  call("bootstrap").then(function (b) {
+    boot = b;
+    buildTabs();
+    google.script.url.getLocation(function (loc) { go((loc.hash || "").replace("#", "") || "home"); });
+  }).catch(function (err) { failed(view, err); });
+})();
+</script>

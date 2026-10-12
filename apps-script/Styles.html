@@ -1,0 +1,87 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Zilla+Slab:wght@500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #fbf8f8; --surface: #ffffff; --surface-2: #f3eeef;
+    --ink: #1d1517; --ink-soft: #4d4447; --muted: #636569; --line: #e4dadc;
+    --garnet: #762334; --garnet-strong: #5a1222; --garnet-text: #762334; --on-garnet: #ffffff;
+    --gold: #dea821; --ok: #2f6b3a; --warn: #8a5a00; --bad: #a3242f;
+    --font-display: "Zilla Slab", Georgia, serif;
+    --font-body: "Albert Sans", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --radius: 4px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141012; --surface: #1d181a; --surface-2: #241d20;
+      --ink: #f2eced; --ink-soft: #cfc5c8; --muted: #a39b9e; --line: #3a3034;
+      --garnet: #8d2d40; --garnet-text: #e0899a; --ok: #7cc48a; --warn: #e6b450; --bad: #f08a92;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141012; --surface: #1d181a; --surface-2: #241d20;
+    --ink: #f2eced; --ink-soft: #cfc5c8; --muted: #a39b9e; --line: #3a3034;
+    --garnet: #8d2d40; --garnet-text: #e0899a; --ok: #7cc48a; --warn: #e6b450; --bad: #f08a92;
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 1rem; line-height: 1.55; }
+  a { color: var(--garnet-text); }
+  :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0; }
+  h1 { font-size: 1.9rem; } h2 { font-size: 1.45rem; } h3 { font-size: 1.1rem; }
+  p { margin: 0; }
+  .eyebrow { font-weight: 700; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--garnet-text); }
+  .muted { color: var(--muted); }
+  .small { font-size: 0.875rem; }
+  .mono { font-family: var(--font-mono); font-size: 0.88em; }
+
+  .top { background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+  .top-in { max-width: 64rem; margin: 0 auto; padding: 0.75rem 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
+  .who { font-size: 0.875rem; color: var(--ink-soft); }
+  .tabs { max-width: 64rem; margin: 0 auto; padding: 0 16px; display: flex; gap: 0.15rem; overflow-x: auto; scrollbar-width: thin; }
+  .tabs button { font: inherit; font-weight: 600; font-size: 0.9rem; color: var(--ink-soft); background: none; border: 0; padding: 0.6rem 0.75rem; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button[aria-selected="true"] { color: var(--garnet-text); border-bottom-color: var(--garnet-text); }
+
+  main { max-width: 64rem; margin: 0 auto; padding: 1.5rem 16px 4rem; display: grid; gap: 1.5rem; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.2rem; display: grid; gap: 0.75rem; min-width: 0; }
+  .grid2 { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); align-items: start; }
+  .stack { display: grid; gap: 0.75rem; }
+  .row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .spacer { flex: 1; }
+
+  form { display: grid; gap: 0.8rem; }
+  label { display: grid; gap: 0.25rem; font-weight: 600; font-size: 0.9rem; }
+  label.check { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }
+  input, select, textarea { font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.5rem 0.6rem; width: 100%; min-width: 0; }
+  input[type="checkbox"] { width: auto; }
+  textarea { min-height: 5.5rem; resize: vertical; }
+  .two { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+  button.btn { font: inherit; font-weight: 700; font-size: 0.9rem; cursor: pointer; padding: 0.55rem 1rem; border-radius: var(--radius); border: 2px solid var(--garnet); background: var(--garnet); color: var(--on-garnet); justify-self: start; }
+  button.btn:hover { background: var(--garnet-strong); border-color: var(--garnet-strong); }
+  button.btn.ghost { background: transparent; color: var(--garnet-text); border-color: var(--line); }
+  button.btn.ghost:hover { border-color: var(--garnet-text); }
+  button.btn.sm { padding: 0.3rem 0.6rem; font-size: 0.82rem; }
+  button:disabled { opacity: 0.55; cursor: progress; }
+
+  .list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+  .list > li { padding: 0.75rem 0; border-bottom: 1px solid var(--line); display: grid; gap: 0.35rem; min-width: 0; overflow-wrap: anywhere; }
+  .pre { white-space: pre-wrap; }
+  .badge { display: inline-block; padding: 0.05rem 0.45rem; border: 1px solid currentColor; border-radius: 999px; font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .badge.ok { color: var(--ok); } .badge.warn { color: var(--warn); } .badge.bad { color: var(--bad); } .badge.brand { color: var(--garnet-text); }
+
+  .flash { padding: 0.6rem 0.8rem; border-radius: var(--radius); border: 1px solid; font-size: 0.92rem; }
+  .flash.ok { color: var(--ok); border-color: currentColor; }
+  .flash.err { color: var(--bad); border-color: currentColor; }
+  .loading { color: var(--muted); }
+
+  .doc h2 { margin-top: 0.5rem; } .doc h3 { margin-top: 0.75rem; }
+  .doc ul, .doc ol { margin: 0.25rem 0 0; padding-left: 1.25rem; display: grid; gap: 0.3rem; }
+  .doc > * + * { margin-top: 0.6rem; }
+
+  .denied { max-width: 36rem; margin: 10vh auto; padding: 0 16px; display: grid; gap: 1rem; }
+</style>

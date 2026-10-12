@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<?!= include_('Styles') ?>
+</head>
+<body>
+<main class="denied">
+  <span class="eyebrow">Union College &middot; Music Technology</span>
+  <h1>Members portal</h1>
+  <? if (email) { ?>
+    <p>You're signed in as <strong><?= email ?></strong>, but this account isn't on the access list yet.</p>
+  <? } else { ?>
+    <p>Sign in with your Union College Google account to continue.</p>
+  <? } ?>
+  <p>The portal is for Music Technology work-study students, students in Music Technology courses, and faculty approved to use TARDIS. To request access, email Professor Chris Chandler at <a href="mailto:chandlec@union.edu">chandlec@union.edu</a> with your name and what you'd like to use it for.</p>
+  <p><a href="https://union-music-technology.github.io/music-tech/">Back to the Music Technology site</a></p>
+</main>
+</body>
+</html>
