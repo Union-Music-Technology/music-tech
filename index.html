@@ -48,9 +48,11 @@
     </a>
     <nav class="nav" aria-label="Main">
       <a href="./" aria-current="page">Program</a>
+      <a href="#facilities">Spaces</a>
       <a href="tardis/">TARDIS</a>
       <a href="#courses">Courses</a>
       <a href="#contact">Contact</a>
+      <a href="#" data-portal hidden>Members</a>
     </nav>
   </div>
 </header>
@@ -91,7 +93,7 @@
         <span class="eyebrow">Facilities</span>
         <h2 id="facilities-title">Where the work happens</h2>
       </div>
-      <div class="places">
+      <div class="places" id="space-grid">
         <article class="place">
           <img src="assets/img/tardis/control-room-wide-1000.jpg" alt="The TARDIS control room, looking through the window into the live room." loading="lazy">
           <div class="place-body">
@@ -110,6 +112,7 @@
             <span class="room-no">TAYLOR MUSIC CENTER</span>
             <h3>Music Technology Studio</h3>
             <p>A computer lab for hands-on coursework. Every station has an iMac, a MIDI keyboard, an audio interface, a microphone, and headphones, and the teaching station drives a large display and studio monitors.</p>
+            <a class="btn btn-primary" href="studio/">Explore the studio</a>
           </div>
         </article>
       </div>
@@ -200,11 +203,13 @@
         <li><a href="https://www.union.edu/music-technology">Music Technology on union.edu</a></li>
         <li><a href="https://www.union.edu/music">Department of Music</a></li>
         <li><a href="https://github.com/Union-Music-Technology">Union Music Technology on GitHub</a></li>
+        <li><a href="#" data-portal hidden>Members portal (Union sign-in)</a></li>
       </ul>
     </div>
     <p class="foot-note">Union College, Schenectady, New York. Photos by Union College Communications and Marketing.</p>
   </div>
 </footer>
 <script src="assets/js/site.js"></script>
+<script src="assets/js/site-data.js" data-root="./"></script>
 </body>
 </html>

@@ -5,15 +5,38 @@ Public website for Union College's Music Technology program. TARDIS (Technology,
 ## Structure
 
 ```
-index.html            Program home (minor overview, facilities, courses, contact)
-tardis/index.html     TARDIS studio page
-assets/css/site.css   Shared tokens, header, footer, buttons (Union palette)
-assets/css/tardis.css TARDIS page styles
-assets/js/site.js     Copy-to-clipboard for email addresses
-assets/img/tardis/    Web-sized photos (1000px and 2000px)
+index.html                  Program home (minor overview, facilities, courses, contact)
+tardis/index.html           TARDIS studio page
+studio/index.html           Music Technology Studio (Taylor 122)
+advanced-studio/index.html  Advanced Studio        (draft, not linked yet)
+tech-booth/index.html       Tech Booth             (draft, not linked yet)
+emerson/index.html          Emerson Auditorium     (draft, not linked yet)
+data/site.json              Which spaces are published, equipment lists, portal link
+assets/css/site.css         Shared tokens, header, footer, buttons (Union palette)
+assets/css/tardis.css       TARDIS page styles
+assets/css/space.css        Styles for the other space pages
+assets/js/site.js           Copy-to-clipboard, lightbox, annotated photo
+assets/js/site-data.js      Renders the facilities grid, equipment lists, Members link
+assets/img/                 Web-sized photos (1000px and 2000px)
+apps-script/                Members portal (Google Apps Script); see apps-script/README.md
 ```
 
-Plain HTML and CSS with no build step. To add a page, copy `tardis/index.html` into a new folder, keep the header and footer, and add a link to the nav on every page.
+Plain HTML and CSS with no build step. To preview locally, run `python3 -m http.server` in this folder and open http://localhost:8000 (the data file doesn't load from `file://`).
+
+## Spaces and equipment: hidden until known
+
+Everything that changes is in `data/site.json`:
+
+- **Publishing a space.** A space shows on the home page only when `"published": true`. Draft pages exist and work, but nothing links to them and they carry `<meta name="robots" content="noindex">`. To publish one, set `published` to `true` and delete that meta tag from its page.
+- **Equipment.** Each item has a `space`, `category`, `name`, `detail`, `qty`, and `status`. Only `"status": "confirmed"` items appear. Anything a work-study student hasn't checked in person stays `"unverified"` and hidden. A space page with no confirmed items hides its equipment section entirely.
+- **Preview.** Add `?preview` to any URL (for example `/?preview` or `/emerson/?preview`) to see draft spaces and unconfirmed equipment, flagged as such.
+- **Members link.** Set `portalUrl` to the Apps Script web app URL and a Members link appears in every page's nav and footer.
+
+The TARDIS page keeps its hand-built equipment layout. Its items are also in `site.json` so they can be imported into the portal inventory.
+
+## Members portal
+
+Private content (rules, reservations, problem reports, inventory editing, work-study hours, access management) lives in a Google Apps Script web app that requires a Union Google login, not on GitHub Pages. Everything in this repository is public, so nothing private goes here. Setup and the security model are in [apps-script/README.md](apps-script/README.md).
 
 ## Publishing with GitHub Pages
 
@@ -23,6 +46,8 @@ Settings > Pages > Source: Deploy from a branch > `main` / root. The site will b
 ## Content sources
 
 - TARDIS Documentation (Google Doc): purpose, rooms, policies, hours, equipment, steering committee
+- Music Technology Studio Documentation, Emerson PA install, and Ensemble Audio/Video Recording docs: studio setup, Emerson system, concert workflow
+- Music Tech Work-Study: Roles & Expectations: portal roles, handbook, hours and check-ins
 - Music Tech and TARDIS Slideshow: course descriptions and program copy
 - union.edu Music Technology and style guide pages: minor requirements, brand colors
 
