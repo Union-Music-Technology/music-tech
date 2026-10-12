@@ -73,3 +73,25 @@ document.querySelectorAll("[data-copy]").forEach(function (btn) {
     l.addEventListener("mouseenter", function () { set(l.getAttribute("data-spot")); });
   });
 })();
+
+// Spaces dropdown in the nav
+(function () {
+  document.querySelectorAll(".nav-menu").forEach(function (menu) {
+    var btn = menu.querySelector(".nav-menu-btn");
+    var list = menu.querySelector(".nav-menu-list");
+    if (!btn || !list) return;
+    function set(open) {
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      list.hidden = !open;
+    }
+    btn.addEventListener("click", function () { set(list.hidden); });
+    list.addEventListener("click", function (e) { if (e.target.closest("a")) set(false); });
+    document.addEventListener("click", function (e) { if (!menu.contains(e.target)) set(false); });
+    menu.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !list.hidden) { set(false); btn.focus(); }
+    });
+    menu.addEventListener("focusout", function (e) {
+      if (e.relatedTarget && !menu.contains(e.relatedTarget)) set(false);
+    });
+  });
+})();
