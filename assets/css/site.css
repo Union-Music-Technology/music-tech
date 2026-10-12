@@ -228,6 +228,3 @@ p { margin: 0; }
   .nav-menu-btn { padding: 0.35rem 0.6rem; }
   .nav-menu-list { min-width: 13rem; }
 }
-@media (hover: hover) and (pointer: fine) {
-  .nav-menu:hover .nav-menu-list { display: block; }
-}
