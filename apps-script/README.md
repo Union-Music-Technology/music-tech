@@ -44,7 +44,7 @@ Work-study students and admins aren't held to the weekly booking cap.
 4. **Fill in Settings.** In the **Settings** tab, paste the two TARDIS calendar ids (Google Calendar › the calendar's settings › *Integrate calendar* › Calendar ID), and leave `reservations_mode` at `request` to start.
 5. **Import equipment (optional).** Once the public site is live, choose **Music Tech › Import equipment from the public site** to copy `data/site.json` into the **Equipment** tab.
 6. **Deploy.** In Apps Script choose **Deploy › New deployment › Web app**, with *Execute as:* **Me** and *Who has access:* **Anyone within Union College**. Copy the `/exec` URL.
-7. **Link it from the site.** Put that URL in `portalUrl` in `data/site.json`. The **Members** links appear on every page.
+7. **Share the link directly.** The public site never links to the portal. Send the `/exec` URL to work-study students and approved users (or post it in the TARDIS entry space) and have them bookmark it.
 8. **Add people.** In the portal's **Access** tab, or straight in the sheet: one row per person with email, name, role, spaces (`tardis`, or `*` for all), and **Active** ticked.
 
 After code changes, use **Deploy › Manage deployments › Edit › Version: New version** so the URL stays the same.

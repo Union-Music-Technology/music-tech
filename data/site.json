@@ -1,7 +1,6 @@
 {
   "_readme": "Controls what the public site shows. A space appears on the home page only when published is true. Equipment appears only when status is confirmed (and public is not false). Add ?preview to any page URL to see drafts and unconfirmed items. See README.md.",
 
-  "portalUrl": "",
   "equipmentFeed": "",
 
   "spaces": [

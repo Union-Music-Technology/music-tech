@@ -16,7 +16,7 @@ assets/css/site.css         Shared tokens, header, footer, buttons (Union palett
 assets/css/tardis.css       TARDIS page styles
 assets/css/space.css        Styles for the other space pages
 assets/js/site.js           Copy-to-clipboard, lightbox, annotated photo
-assets/js/site-data.js      Renders the facilities grid, equipment lists, Members link
+assets/js/site-data.js      Renders the facilities grid and equipment lists
 assets/img/                 Web-sized photos (1000px and 2000px)
 apps-script/                Members portal (Google Apps Script); see apps-script/README.md
 ```
@@ -30,13 +30,12 @@ Everything that changes is in `data/site.json`:
 - **Publishing a space.** A space shows on the home page only when `"published": true`. Draft pages exist and work, but nothing links to them and they carry `<meta name="robots" content="noindex">`. To publish one, set `published` to `true` and delete that meta tag from its page.
 - **Equipment.** Each item has a `space`, `category`, `name`, `detail`, `qty`, and `status`. Only `"status": "confirmed"` items appear. Anything a work-study student hasn't checked in person stays `"unverified"` and hidden. A space page with no confirmed items hides its equipment section entirely.
 - **Preview.** Add `?preview` to any URL (for example `/?preview` or `/emerson/?preview`) to see draft spaces and unconfirmed equipment, flagged as such.
-- **Members link.** Set `portalUrl` to the Apps Script web app URL and a Members link appears in every page's nav and footer.
 
 The TARDIS page keeps its hand-built equipment layout. Its items are also in `site.json` so they can be imported into the portal inventory.
 
 ## Members portal
 
-Private content (rules, reservations, problem reports, inventory editing, work-study hours, access management) lives in a Google Apps Script web app that requires a Union Google login, not on GitHub Pages. Everything in this repository is public, so nothing private goes here. Setup and the security model are in [apps-script/README.md](apps-script/README.md).
+Private content (rules, reservations, problem reports, inventory editing, work-study hours, access management) lives in a Google Apps Script web app that requires a Union Google login, not on GitHub Pages. Everything in this repository is public, so nothing private goes here. It is deliberately not linked from any public page: share its URL directly with people who need it, and they still have to sign in with a Union account on the access list. Setup and the security model are in [apps-script/README.md](apps-script/README.md).
 
 ## Publishing with GitHub Pages
 

@@ -1,7 +1,6 @@
 // Data-driven parts of the public site, read from data/site.json:
 //  - home page facilities grid (published spaces only)
 //  - equipment lists on space pages (confirmed items only)
-//  - Members link (shown once portalUrl is set)
 //  - draft banner on unpublished space pages
 // Add ?preview to a URL to see unpublished spaces and unconfirmed equipment.
 // If anything fails to load, the static HTML stays as it is.
@@ -19,13 +18,6 @@
 
   function isHttp(url) { return /^https:\/\//.test(url || ""); }
 
-  function portal(site) {
-    if (!isHttp(site.portalUrl)) return;
-    document.querySelectorAll("[data-portal]").forEach(function (a) {
-      a.href = site.portalUrl;
-      a.hidden = false;
-    });
-  }
 
   function spacesGrid(site) {
     var grid = document.getElementById("space-grid");
@@ -115,7 +107,6 @@
   fetch(root + "data/site.json", { cache: "no-cache" })
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
     .then(function (site) {
-      portal(site);
       spacesGrid(site);
       draft(site);
       // A live feed from the members portal, when configured, replaces the static list.
